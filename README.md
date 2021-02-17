@@ -7,7 +7,7 @@ Code for [Sandwich Batch Normalization](Sandwich Batch Normalization).
 ## Introduction
 We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of Batch Normalization (BN) with only a few lines of code changes.
 
-![method](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/imgs/architect.pdf)
+![method](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/architect.pdf)
 
 We demonstrate the prevailing effectiveness of SaBN as a drop-in replacement in four tasks:
 1. image generation,
@@ -17,10 +17,10 @@ We demonstrate the prevailing effectiveness of SaBN as a drop-in replacement in 
 
 ## Usage
 Check each of them for more information:
-1. [GAN](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/GAN)
-2. [NAS](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/NAS)
-3. [Adv](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/Adv)
-4. [NST](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/NST)
+1. [GAN](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/GAN)
+2. [NAS](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/NAS)
+3. [Adv](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/Adv)
+4. [NST](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/NST)
 
 ## Results
 
@@ -40,14 +40,14 @@ Evaluation results on CIFAR-10:
 
 Visual results on ImageNet 128*128 resolution:
 
-![GAN](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/imgs/sngan_imagenet_compare.pdf)
+![GAN](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/sngan_imagenet_compare.pdf)
 
 ### Neural Architecture Search
 Results on NAS-Bench-201:
 
 CIFAR-100            |  ImageNet16-120
 :-------------------------:|:-------------------------:
-![CIFAR100](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/imgs/DARTS_e35_cifar100.png)  |  ![ImageNet](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/imgs/DARTS_e35_imagenet100.png)
+![CIFAR100](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/DARTS_e35_cifar100.png)  |  ![ImageNet](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/DARTS_e35_imagenet100.png)
 
 
 ### Adversarial Training
@@ -55,15 +55,15 @@ CIFAR-100            |  ImageNet16-120
 ### Neural Style Transfer
 Model with proposed SaAdaIN achieves lower style & content loss:
 
-![style curves](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/imgs/style_curves.pdf)
+![style curves](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/style_curves.pdf)
 
 The visual results:
 
-![style images](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/master/imgs/style_image.pdf)
+![style images](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/style_image.pdf)
 
 
 ## Acknowledgement
-1. NAS codebase from [NAS-Bench-201](https://github.com/D-X-Y/AutoDL-Projects/blob/master/docs/NAS-Bench-201.md).
+1. NAS codebase from [NAS-Bench-201](https://github.com/D-X-Y/AutoDL-Projects/blob/main/docs/NAS-Bench-201.md).
 2. NST codebase from [AdaIN](https://github.com/naoto0804/pytorch-AdaIN).
 
 
