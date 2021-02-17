@@ -7,7 +7,7 @@ Code for [Sandwich Batch Normalization](Sandwich Batch Normalization).
 ## Introduction
 We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of Batch Normalization (BN) with only a few lines of code changes.
 
-![method](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/architect.pdf)
+![method](imgs/architect.png)
 
 We demonstrate the prevailing effectiveness of SaBN as a drop-in replacement in four tasks:
 1. image generation,
@@ -38,16 +38,16 @@ Evaluation results on CIFAR-10:
 | **BigGAN-SaBN**  |   9.01(+0.10)   | 8.03 (−0.54) |
 | **SNGAN-SaBN**   |   8.89 (+0.13)  |  8.97(−1.21) |
 
-Visual results on ImageNet 128*128 resolution:
+Visual results on ImageNet (128*128 resolution):
 
-![GAN](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/sngan_imagenet_compare.pdf)
+![GAN](imgs/sngan_imagenet_compare.png)
 
 ### Neural Architecture Search
 Results on NAS-Bench-201:
 
 CIFAR-100            |  ImageNet16-120
 :-------------------------:|:-------------------------:
-![CIFAR100](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/DARTS_e35_cifar100.png)  |  ![ImageNet](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/DARTS_e35_imagenet100.png)
+![CIFAR100](imgs/DARTS_e35_cifar100.png)  |  ![ImageNet](imgs/DARTS_e35_imagenet100.png)
 
 
 ### Adversarial Training
@@ -55,11 +55,11 @@ CIFAR-100            |  ImageNet16-120
 ### Neural Style Transfer
 Model with proposed SaAdaIN achieves lower style & content loss:
 
-![style curves](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/style_curves.pdf)
+![style curves](imgs/style_curves.png)
 
 The visual results:
 
-![style images](https://github.com/VITA-Group/Sandwich-Batch-Normalization/blob/main/imgs/style_image.pdf)
+![style images](imgs/style_image.png)
 
 
 ## Acknowledgement
