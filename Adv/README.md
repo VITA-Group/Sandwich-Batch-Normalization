@@ -8,18 +8,18 @@
 ### Installation:
 1. Install pytorch >= v1.1.0 following [official instruction](https://pytorch.org/).
 2. Clone this repo:
-```bash
+```shell
 git clone https://github.com/VITA-Group/Sandwich-Batch-Normalization
 cd Adv
 ```
 3. Install dependencies:
-```bash
+```shell
 pip install -r requirements.txt
 ```
 
 ### Usage
 #### Training
-```bash
+```shell
 bash scripts/train_autogan_ccbn_cifar10.sh
 bash scripts/train_autogan_sabn_cifar10.sh
 
@@ -29,7 +29,7 @@ bash scripts/train_sngan_sabn_cifar10.sh
 
 #### Testing
 Check Tensorboard:
-```bash
+```shell
 tensorboard --logdir output --port 6001
 ```
 

@@ -10,10 +10,10 @@ We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of
 ![method](imgs/architect.png)
 
 We demonstrate the prevailing effectiveness of SaBN as a drop-in replacement in four tasks:
-1. image generation,
+1. conditional image generation,
 2. neural architecture search,
 3. adversarial training,
-4. style transfer.
+4. arbitrary neural style transfer.
 
 ## Usage
 Check each of them for more information:
@@ -39,7 +39,7 @@ Using SaBN in conditional generation task enables an immediate performance boost
 ### 2. Neural Architecture Search
 We adopted DARTS as the baseline search algorithm. Results on NAS-Bench-201 are presented below:
 
-| Method            |     CIFAR-100    |     ImageNet     |
+| Method            | CIFAR-100 (top1) |  ImageNet(top1)  |
 |-------------------|:----------------:|:----------------:|
 | DARTS             |   44.05 ± 7.47   |   36.47 ± 7.06   |
 | DARTS-SaBN (ours) | **71.56 ± 1.39** | **45.85 ± 0.72** |
@@ -61,7 +61,7 @@ Evaluation results:
 | PGD-10 (RA) | 41.57 |        43.05       |         **44.93**        |
 | PGD-20 (RA) | 40.02 |        41.60       |         **43.14**        |
 
-### 4. Neural Style Transfer
+### 4. Arbitrary Neural Style Transfer
 
 Model equipped with the proposed SaAdaIN achieves lower style & content loss:
 
