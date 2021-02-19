@@ -10,7 +10,7 @@ We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of
 ![method](imgs/architect.png)
 
 We demonstrate the prevailing effectiveness of SaBN as a drop-in replacement in four tasks:
-1. image generation,
+1. conditional image generation,
 2. neural architecture search,
 3. adversarial training,
 4. style transfer.
