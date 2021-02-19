@@ -53,8 +53,7 @@ def main(args):
     start_epoch = 0
     if args.resume:
         print('resume from checkpoint')
-        checkpoint = torch.load(os.path.join(args.save_dir, 'model.pt'),
-                                map_location=torch.device('cuda:' + str(args.gpu)))
+        checkpoint = torch.load(os.path.join(args.save_dir, 'model.pt'))
         start_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
 
@@ -150,6 +149,7 @@ def main(args):
         writer.add_scalar('loss/atloss_adv', atloss_adv, epoch)
 
         # evaluate on test set
+        # clean branch
         test_tacc_clean, test_tloss_clean = validate(args, test_loader, model, criterion, 0)
         writer.add_scalar('acc/test_tacc_clean', test_tacc_clean, epoch)
         writer.add_scalar('loss/test_tloss_clean', test_tloss_clean, epoch)
@@ -158,6 +158,7 @@ def main(args):
         writer.add_scalar('acc/test_atacc_clean', test_atacc_clean, epoch)
         writer.add_scalar('loss/test_atloss_clean', test_atloss_clean, epoch)
 
+        # adv branch
         test_tacc_adv, test_tloss_adv = validate(args, test_loader, model, criterion, 1)
         writer.add_scalar('acc/test_tacc_adv', test_tacc_adv, epoch)
         writer.add_scalar('loss/test_tloss_adv', test_tloss_adv, epoch)
@@ -255,7 +256,6 @@ if __name__ == '__main__':
     parser.add_argument('--seed', default=10, type=int, help='random seed')
 
     parser.add_argument('--save_dir', help='The directory used to save the trained models', default='adv', type=str)
-    parser.add_argument('--gpu', type=int, default=7, help='gpu device id')
     parser.add_argument('--norm_module', type=str, required=True, choices=["bn", "auxbn", "saauxbn"], help='model type')
     parser.add_argument("--resume", action="store_true", help="resume from checkpoint")
 
