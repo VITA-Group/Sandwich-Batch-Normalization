@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from copy import deepcopy
 from ..cell_operations_ccbn import ResNetBasicblock
-from .search_cells_cbn import NAS201SearchCell as SearchCell
+from .search_cells_ccbn import NAS201SearchCell as SearchCell
 from .genotypes import Structure
 from ..model_utils import cal_entropy
 

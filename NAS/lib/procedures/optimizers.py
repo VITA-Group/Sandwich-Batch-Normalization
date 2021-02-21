@@ -175,7 +175,7 @@ class CrossEntropyLabelSmooth(nn.Module):
         return loss
 
 
-def get_optim_scheduler(parameters, config, args_epoch=None, args_weight_lr=None):
+def get_optim_scheduler(parameters, config, args_weight_lr=None):
     weight_lr = config.LR if args_weight_lr is None else args_weight_lr
     assert hasattr(config, 'optim') and hasattr(config, 'scheduler') and hasattr(config,
                                                                                  'criterion'), 'config must have optim / scheduler / criterion keys instead of {:}'.format(
@@ -188,7 +188,7 @@ def get_optim_scheduler(parameters, config, args_epoch=None, args_weight_lr=None
     else:
         raise ValueError('invalid optim : {:}'.format(config.optim))
 
-    epochs = args_epoch if args_epoch else config.epochs
+    epochs = config.epochs
     if config.scheduler == 'cos':
         T_max = getattr(config, 'T_max', epochs)
         scheduler = CosineAnnealingLR(optim, config.warmup, epochs, T_max, config.eta_min)

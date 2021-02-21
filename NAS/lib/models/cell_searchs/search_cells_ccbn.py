@@ -3,13 +3,14 @@
 ##################################################
 import torch.nn as nn
 from copy import deepcopy
-from ..cell_operations_sabn import OPS
+from ..cell_operations_ccbn import OPS
 
 
 # This module is used for NAS-Bench-201, represents a small search space with a complete DAG
 class NAS201SearchCell(nn.Module):
+
     def __init__(self, C_in, C_out, stride, max_nodes, op_names, affine=False, track_running_stats=True):
-        super(NAS201SearchCell, self).__init__()
+        super().__init__()
         self.num_ops = len(op_names)
         self.op_names = deepcopy(op_names)
         self.edges = nn.ModuleDict()

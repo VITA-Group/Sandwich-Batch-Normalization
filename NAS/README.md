@@ -23,8 +23,8 @@ pip install -r requirements.txt
 ### Usage
 #### Training
 ```shell
-bash scripts/DARTS-V1.sh cifar100 0 777 35
-bash scripts/DARTS-V1-sabn.sh cifar100 0 777 35
+bash scripts/DARTS-V1.sh cifar100 0 777
+bash scripts/DARTS-V1-sabn.sh cifar100 0 777
 ```
 
 #### Testing

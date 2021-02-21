@@ -6,13 +6,12 @@ class ConditionalBatchNorm2d(nn.Module):
     def __init__(self, num_features, affine, track_running_stats, num_prev_ops: int, num_prev_nodes: int,
                  is_node_zero: bool):
         super().__init__()
-        assert not affine
         num_classes = num_prev_ops ** num_prev_nodes
         self.num_prev_ops = num_prev_ops
         self.is_node_zero = is_node_zero
         self.num_features = num_features
 
-        self.bn = nn.BatchNorm2d(num_features, affine=affine, track_running_stats=track_running_stats)
+        self.bn = nn.BatchNorm2d(num_features, affine=False, track_running_stats=track_running_stats)
         self.embed = nn.Embedding(num_classes, num_features * 2)
         self.embed.weight.data[:, :num_features].normal_(1, 0.02)  # Initialise scale at N(1, 0.02)
         self.embed.weight.data[:, num_features:].zero_()  # Initialise bias at 0
@@ -45,6 +44,7 @@ class SandwichBatchNorm2d(nn.Module):
              range(num_classes)])
         self.shared_weight = nn.Parameter(torch.ones(num_features), requires_grad=True)
         self.shared_bias = nn.Parameter(torch.zeros(num_features), requires_grad=True)
+        nn.init.normal_(self.shared_weight.data, 1.0, 0.02)
 
         self.embed = nn.Embedding(num_classes, num_features * 2)
         self.embed.weight.data[:, :num_features].normal_(1, 0.02)  # Initialise scale at N(1, 0.02)

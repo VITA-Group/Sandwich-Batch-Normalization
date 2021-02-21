@@ -158,7 +158,7 @@ def main(xargs):
     search_model = get_cell_based_tiny_net(model_config)
     # logger.log('search-model :\n{:}'.format(search_model))
 
-    w_optimizer, w_scheduler, criterion = get_optim_scheduler(search_model.get_weights(), config, xargs.num_epochs, xargs.weight_learning_rate)
+    w_optimizer, w_scheduler, criterion = get_optim_scheduler(search_model.get_weights(), config, xargs.weight_learning_rate)
     a_optimizer = torch.optim.Adam(search_model.get_alphas(), lr=xargs.arch_learning_rate, betas=(0.5, 0.999),
                                    weight_decay=xargs.arch_weight_decay)
     logger.log('w-optimizer : {:}'.format(w_optimizer))
@@ -197,8 +197,12 @@ def main(xargs):
     # start training
     # start_time, search_time, epoch_time, total_epoch = time.time(), AverageMeter(), AverageMeter(), config.epochs + config.warmup
     start_time, search_time, epoch_time = time.time(), AverageMeter(), AverageMeter()
-    total_epoch = config.epochs + config.warmup if xargs.num_epochs == 0 else xargs.num_epochs
+    total_epoch = config.epochs + config.warmup
+    assert 0 < xargs.early_stop_epoch <= total_epoch - 1
     for epoch in range(start_epoch, total_epoch):
+        if epoch >= xargs.early_stop_epoch:
+            logger.log(f"Early stop @ {epoch} epoch.")
+            break
         if xargs.perturb:
             epsilon_alpha = 0.03 + (xargs.epsilon_alpha - 0.03) * epoch / total_epoch
             logger.log(f'epoch {epoch} epsilon_alpha {epsilon_alpha}')
@@ -298,9 +302,9 @@ def main(xargs):
         start_time = time.time()
 
     logger.log('\n' + '-' * 100)
-    logger.log('{:} : run {:} epochs, cost {:.1f} s, last-geno is {:}.'.format(args.model, total_epoch, search_time.sum,
-                                                                               genotypes[total_epoch - 1]))
-    if api is not None: logger.log('{:}'.format(api.query_by_arch(genotypes[total_epoch - 1])))
+    logger.log('{:} : run {:} epochs, cost {:.1f} s, last-geno is {:}.'.format(args.model, xargs.early_stop_epoch, search_time.sum,
+                                                                               genotypes[xargs.early_stop_epoch-1]))
+    if api is not None: logger.log('{:}'.format(api.query_by_arch(genotypes[xargs.early_stop_epoch-1])))
     logger.close()
 
 
@@ -309,7 +313,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', type=str, help='Path to dataset')
     parser.add_argument('--dataset', type=str, choices=['cifar10', 'cifar100', 'ImageNet16-120'],
                         help='Choose between Cifar10/100 and ImageNet-16.')
-    parser.add_argument('--num_epochs', type=int, help='The number of cells in one stage.')
+    parser.add_argument('--early_stop_epoch', type=int, help='Early stop epoch.')
     # channels and number-of-cells
     parser.add_argument('--search_space_name', type=str, help='The search space name.')
     parser.add_argument('--max_nodes', type=int, help='The maximum number of nodes.')
