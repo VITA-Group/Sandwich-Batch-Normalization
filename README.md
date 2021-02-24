@@ -2,7 +2,7 @@
 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 
-Code for [Sandwich Batch Normalization](-).
+Code for [Sandwich Batch Normalization](https://arxiv.org/abs/2102.11382).
 
 ## Introduction
 We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of Batch Normalization (BN) with only a few lines of code changes.
@@ -10,10 +10,10 @@ We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of
 ![method](imgs/architect.png)
 
 We demonstrate the prevailing effectiveness of SaBN as a drop-in replacement in four tasks:
-1. conditional image generation,
-2. neural architecture search,
-3. adversarial training,
-4. arbitrary neural style transfer.
+1. **conditional image generation**,
+2. **neural architecture search**,
+3. **adversarial training**,
+4. **arbitrary neural style transfer**.
 
 ## Usage
 Check each of them for more information:
@@ -39,7 +39,7 @@ Using SaBN in conditional generation task enables an immediate performance boost
 ### 2. Neural Architecture Search
 We adopted DARTS as the baseline search algorithm. Results on NAS-Bench-201 are presented below:
 
-| Method            | CIFAR-100 (top1) |  ImageNet(top1)  |
+| Method            | CIFAR-100 (top1) |  ImageNet (top1)  |
 |-------------------|:----------------:|:----------------:|
 | DARTS             |   44.05 ± 7.47   |   36.47 ± 7.06   |
 | DARTS-SaBN (ours) | **71.56 ± 1.39** | **45.85 ± 0.72** |
@@ -66,7 +66,7 @@ Evaluation results:
 Model equipped with the proposed SaAdaIN achieves lower style & content loss:
 
 ![style curves](imgs/style_curves.png)
- 
+
 ## Acknowledgement
 1. NAS codebase from [NAS-Bench-201](https://github.com/D-X-Y/AutoDL-Projects/blob/main/docs/NAS-Bench-201.md).
 2. NST codebase from [AdaIN](https://github.com/naoto0804/pytorch-AdaIN).

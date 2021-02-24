@@ -68,4 +68,4 @@ Evaluation results:
 
 Visual results on ImageNet (128*128 resolution):
 
-![GAN](../imgs/sngan_imagenet_compare.png)
+![GAN](../imgs/sngan_imagenet_compare.png) 
