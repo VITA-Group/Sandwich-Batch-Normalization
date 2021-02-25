@@ -38,9 +38,19 @@ tensorboard --logdir output --port 6001
 The visual results:
 ![style images](../imgs/style_image.png)
 
-Content & style loss:
+The model equipped with the proposed SaAdaIN achieves lower style & content loss on both training and testing set.
 
-![style curves](../imgs/style_curves.png)
+**Training loss**:
+
+Training style loss            |  Training content loss
+:-------------------------:|:-------------------------:
+![st](../imgs/st_losses.png)  |  ![ct](../imgs/ct_losses.png)
+
+**Validation loss**:
+
+Validation style loss            | Validation content loss
+:-------------------------:|:-------------------------:
+![val_st](../imgs/val_st_losses.png)  |  ![val_ct](../imgs/val_ct_losses.png)
 
 ## Acknowledgement
 Code borrowed from [AdaIN](https://github.com/naoto0804/pytorch-AdaIN).

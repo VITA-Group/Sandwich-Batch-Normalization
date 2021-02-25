@@ -68,4 +68,7 @@ Evaluation results:
 
 Visual results on ImageNet (128*128 resolution):
 
-![GAN](../imgs/sngan_imagenet_compare.png) 
+SNGAN          |  SNGAN-SaBN (ours)
+:-------------------------:|:-------------------------:
+![CIFAR100](../imgs/sngan_imagenet.png)  |  ![ImageNet](../imgs/sngan_sabn_imagenet.png)
+

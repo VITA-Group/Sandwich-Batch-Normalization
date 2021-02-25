@@ -36,6 +36,13 @@ Using SaBN in conditional generation task enables an immediate performance boost
 | **BigGAN-SaBN** (ours) |   9.01 (+0.10)   | 8.03 (−0.54) |
 | **SNGAN-SaBN** (ours) |   8.89 (+0.13)  |  8.97 (−1.21) |
 
+Visual results on ImageNet (128*128 resolution):
+
+SNGAN          |  SNGAN-SaBN (ours)
+:-------------------------:|:-------------------------:
+![CIFAR100](imgs/sngan_imagenet.png)  |  ![ImageNet](imgs/sngan_sabn_imagenet.png)
+
+
 ### 2. Neural Architecture Search
 We adopted DARTS as the baseline search algorithm. Results on NAS-Bench-201 are presented below:
 
@@ -63,9 +70,19 @@ Evaluation results:
 
 ### 4. Arbitrary Neural Style Transfer
 
-Model equipped with the proposed SaAdaIN achieves lower style & content loss:
+The model equipped with the proposed SaAdaIN achieves lower style & content loss on both training and testing set.
 
-![style curves](imgs/style_curves.png)
+**Training loss**:
+
+Training style loss            |  Training content loss
+:-------------------------:|:-------------------------:
+![st](imgs/st_losses.png)  |  ![ct](imgs/ct_losses.png)
+
+**Validation loss**:
+
+Validation style loss            | Validation content loss
+:-------------------------:|:-------------------------:
+![val_st](imgs/val_st_losses.png)  |  ![val_ct](imgs/val_ct_losses.png)
 
 ## Acknowledgement
 1. NAS codebase from [NAS-Bench-201](https://github.com/D-X-Y/AutoDL-Projects/blob/main/docs/NAS-Bench-201.md).
