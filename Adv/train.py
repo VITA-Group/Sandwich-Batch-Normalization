@@ -133,20 +133,20 @@ def main(args):
 
         # evaluate on validation set
         tacc_clean, tloss_clean = validate(args, val_loader, model, criterion, 0)
-        writer.add_scalar('acc/tacc_clean', tacc_clean, epoch)
-        writer.add_scalar('loss/tloss_clean', tloss_clean, epoch)
+        writer.add_scalar('acc/val_tacc_clean', tacc_clean, epoch)
+        writer.add_scalar('loss/val_tloss_clean', tloss_clean, epoch)
 
         atacc_clean, atloss_clean = validate_adv(args, val_loader, model, criterion, 0)
-        writer.add_scalar('acc/atacc_clean', atacc_clean, epoch)
-        writer.add_scalar('loss/atloss_clean', atloss_clean, epoch)
+        writer.add_scalar('acc/val_atacc_clean', atacc_clean, epoch)
+        writer.add_scalar('loss/val_atloss_clean', atloss_clean, epoch)
 
         tacc_adv, tloss_adv = validate(args, val_loader, model, criterion, 1)
-        writer.add_scalar('acc/tacc_adv', tacc_adv, epoch)
-        writer.add_scalar('loss/tloss_adv', tloss_adv, epoch)
+        writer.add_scalar('acc/val_tacc_adv', tacc_adv, epoch)
+        writer.add_scalar('loss/val_tloss_adv', tloss_adv, epoch)
 
         atacc_adv, atloss_adv = validate_adv(args, val_loader, model, criterion, 1)
-        writer.add_scalar('acc/atacc_adv', atacc_adv, epoch)
-        writer.add_scalar('loss/atloss_adv', atloss_adv, epoch)
+        writer.add_scalar('acc/val_atacc_adv', atacc_adv, epoch)
+        writer.add_scalar('loss/val_atloss_adv', atloss_adv, epoch)
 
         # evaluate on test set
         # clean branch
