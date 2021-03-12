@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Date    : 4/11/20
-# @Author  : Xinyu Gong (xy_gong@tamu.edu)
+# @Author  : Xinyu Gong (xinyu.gong@utexas.edu)
 # @Link    : None
 # @Version : 0.0
 import torch
