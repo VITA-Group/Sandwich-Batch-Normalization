@@ -5,21 +5,14 @@
 # @Version : 0.0
 
 import os
-import pprint
-from copy import deepcopy
 
-import numpy as np
 import torch
-import torch.nn as nn
-from tensorboardX import SummaryWriter
-from tqdm import tqdm
 
 import models
 from cfg import parse_args
-from datasets import ImageDataset
-from functions import train_conditional, validate
+from functions import validate
 from metrics.inception_score import init_inception
-from utils import save_checkpoint, create_logger, log_image, load_params, copy_params
+from utils import create_logger
 
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
