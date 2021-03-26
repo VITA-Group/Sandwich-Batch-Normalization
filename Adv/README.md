@@ -20,11 +20,9 @@ pip install -r requirements.txt
 ### Usage
 #### Training
 ```shell
-bash scripts/train_autogan_ccbn_cifar10.sh
-bash scripts/train_autogan_sabn_cifar10.sh
-
-bash scripts/train_sngan_ccbn_cifar10.sh
-bash scripts/train_sngan_sabn_cifar10.sh
+bash scripts/train_bn.sh
+bash scripts/train_auxbn.sh
+bash scripts/train_saauxbn.sh
 ```
 
 #### Testing
