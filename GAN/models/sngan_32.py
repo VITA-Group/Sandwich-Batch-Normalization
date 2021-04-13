@@ -9,7 +9,7 @@ import torch.nn as nn
 
 from .modules import GenBlock, OptimizedDisBlock, DisBlock
 
-__all__ = ['Generator', 'Discriminator']
+__all__ = ["Generator", "Discriminator"]
 
 
 class Generator(nn.Module):
@@ -20,9 +20,30 @@ class Generator(nn.Module):
         self.n_classes = args.n_classes
         self.ch = args.gf_dim
         self.l1 = nn.Linear(args.latent_dim, (self.bottom_width ** 2) * self.ch)
-        self.block2 = GenBlock(args, self.ch, self.ch, activation=activation, upsample=True, n_classes=args.n_classes)
-        self.block3 = GenBlock(args, self.ch, self.ch, activation=activation, upsample=True, n_classes=args.n_classes)
-        self.block4 = GenBlock(args, self.ch, self.ch, activation=activation, upsample=True, n_classes=args.n_classes)
+        self.block2 = GenBlock(
+            args,
+            self.ch,
+            self.ch,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
+        self.block3 = GenBlock(
+            args,
+            self.ch,
+            self.ch,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
+        self.block4 = GenBlock(
+            args,
+            self.ch,
+            self.ch,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
         self.b5 = nn.BatchNorm2d(self.ch)
         self.c5 = nn.Conv2d(self.ch, 3, kernel_size=3, stride=1, padding=1)
 
@@ -45,9 +66,15 @@ class Discriminator(nn.Module):
         self.ch = args.df_dim
         self.activation = activation
         self.block1 = OptimizedDisBlock(args, 3, self.ch)
-        self.block2 = DisBlock(args, self.ch, self.ch, activation=activation, downsample=True)
-        self.block3 = DisBlock(args, self.ch, self.ch, activation=activation, downsample=False)
-        self.block4 = DisBlock(args, self.ch, self.ch, activation=activation, downsample=False)
+        self.block2 = DisBlock(
+            args, self.ch, self.ch, activation=activation, downsample=True
+        )
+        self.block3 = DisBlock(
+            args, self.ch, self.ch, activation=activation, downsample=False
+        )
+        self.block4 = DisBlock(
+            args, self.ch, self.ch, activation=activation, downsample=False
+        )
         self.l5 = nn.Linear(self.ch, 1, bias=False)
         if args.n_classes > 0:
             self.l_y = nn.Embedding(args.n_classes, self.ch)

@@ -16,16 +16,46 @@ class Generator(nn.Module):
         self.activation = activation
         self.ch = args.gf_dim
         self.l1 = nn.Linear(args.latent_dim, (self.bottom_width ** 2) * self.ch * 8)
-        self.block2 = GenBlock(args, self.ch * 8, self.ch * 8, activation=activation, upsample=True,
-                               n_classes=args.n_classes)
-        self.block3 = GenBlock(args, self.ch * 8, self.ch * 4, activation=activation, upsample=True,
-                               n_classes=args.n_classes)
-        self.block4 = GenBlock(args, self.ch * 4, self.ch * 4, activation=activation, upsample=True,
-                               n_classes=args.n_classes)
-        self.block5 = GenBlock(args, self.ch * 4, self.ch * 2, activation=activation, upsample=True,
-                               n_classes=args.n_classes)
-        self.block6 = GenBlock(args, self.ch * 2, self.ch, activation=activation, upsample=True,
-                               n_classes=args.n_classes)
+        self.block2 = GenBlock(
+            args,
+            self.ch * 8,
+            self.ch * 8,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
+        self.block3 = GenBlock(
+            args,
+            self.ch * 8,
+            self.ch * 4,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
+        self.block4 = GenBlock(
+            args,
+            self.ch * 4,
+            self.ch * 4,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
+        self.block5 = GenBlock(
+            args,
+            self.ch * 4,
+            self.ch * 2,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
+        self.block6 = GenBlock(
+            args,
+            self.ch * 2,
+            self.ch,
+            activation=activation,
+            upsample=True,
+            n_classes=args.n_classes,
+        )
         self.b7 = nn.BatchNorm2d(self.ch)
         self.c7 = nn.Conv2d(self.ch, 3, kernel_size=3, stride=1, padding=1)
 
@@ -48,11 +78,21 @@ class Discriminator(nn.Module):
         self.ch = args.df_dim
         self.activation = activation
         self.block1 = OptimizedDisBlock(args, 3, self.ch)
-        self.block2 = DisBlock(args, self.ch, self.ch * 2, activation=activation, downsample=True)
-        self.block3 = DisBlock(args, self.ch * 2, self.ch * 4, activation=activation, downsample=True)
-        self.block4 = DisBlock(args, self.ch * 4, self.ch * 8, activation=activation, downsample=True)
-        self.block5 = DisBlock(args, self.ch * 8, self.ch * 8, activation=activation, downsample=True)
-        self.block6 = DisBlock(args, self.ch * 8, self.ch * 8, activation=activation, downsample=False)
+        self.block2 = DisBlock(
+            args, self.ch, self.ch * 2, activation=activation, downsample=True
+        )
+        self.block3 = DisBlock(
+            args, self.ch * 2, self.ch * 4, activation=activation, downsample=True
+        )
+        self.block4 = DisBlock(
+            args, self.ch * 4, self.ch * 8, activation=activation, downsample=True
+        )
+        self.block5 = DisBlock(
+            args, self.ch * 8, self.ch * 8, activation=activation, downsample=True
+        )
+        self.block6 = DisBlock(
+            args, self.ch * 8, self.ch * 8, activation=activation, downsample=False
+        )
         self.l7 = nn.Linear(self.ch * 8, 1, bias=False)
         if args.n_classes > 0:
             self.l_y = nn.Embedding(args.n_classes, self.ch * 8)

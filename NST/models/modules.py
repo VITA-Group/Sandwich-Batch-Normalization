@@ -10,7 +10,7 @@ import torch.nn as nn
 def calc_mean_std(feat, eps=1e-5):
     # eps is a small value added to the variance to avoid divide-by-zero.
     size = feat.size()
-    assert (len(size) == 4)
+    assert len(size) == 4
     N, C = size[:2]
     feat_var = feat.view(N, C, -1).var(dim=2) + eps
     feat_std = feat_var.sqrt().view(N, C, 1, 1)
@@ -22,7 +22,7 @@ decoder = nn.Sequential(
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(512, 256, (3, 3)),
     nn.ReLU(),
-    nn.Upsample(scale_factor=2, mode='nearest'),
+    nn.Upsample(scale_factor=2, mode="nearest"),
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(256, 256, (3, 3)),
     nn.ReLU(),
@@ -35,14 +35,14 @@ decoder = nn.Sequential(
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(256, 128, (3, 3)),
     nn.ReLU(),
-    nn.Upsample(scale_factor=2, mode='nearest'),
+    nn.Upsample(scale_factor=2, mode="nearest"),
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(128, 128, (3, 3)),
     nn.ReLU(),
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(128, 64, (3, 3)),
     nn.ReLU(),
-    nn.Upsample(scale_factor=2, mode='nearest'),
+    nn.Upsample(scale_factor=2, mode="nearest"),
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(64, 64, (3, 3)),
     nn.ReLU(),
@@ -103,55 +103,62 @@ vgg = nn.Sequential(
     nn.ReLU(),  # relu5-3
     nn.ReflectionPad2d((1, 1, 1, 1)),
     nn.Conv2d(512, 512, (3, 3)),
-    nn.ReLU()  # relu5-4
+    nn.ReLU(),  # relu5-4
 )
 
 
 class AdaIN(nn.Module):
     """
-        Adaptive-Instance-Normalization
+    Adaptive-Instance-Normalization
     """
+
     def __init__(self):
         super().__init__()
 
     def forward(self, content_feat, style_feat):
-        assert (content_feat.size()[:2] == style_feat.size()[:2])
+        assert content_feat.size()[:2] == style_feat.size()[:2]
         size = content_feat.size()
         style_mean, style_std = calc_mean_std(style_feat)
         content_mean, content_std = calc_mean_std(content_feat)
 
-        normalized_feat = (content_feat - content_mean.expand(
-            size)) / content_std.expand(size)
+        normalized_feat = (
+            content_feat - content_mean.expand(size)
+        ) / content_std.expand(size)
         return normalized_feat * style_std.expand(size) + style_mean.expand(size)
 
 
 class SaAdaIN(nn.Module):
     """
-        Sandwich Adaptive-Instance-Normalization.
+    Sandwich Adaptive-Instance-Normalization.
     """
+
     def __init__(self, num_features):
         super().__init__()
         self.num_features = num_features
-        self.shared_weight = nn.Parameter(torch.Tensor(num_features), requires_grad=True)
+        self.shared_weight = nn.Parameter(
+            torch.Tensor(num_features), requires_grad=True
+        )
         self.shared_bias = nn.Parameter(torch.Tensor(num_features), requires_grad=True)
 
         nn.init.ones_(self.shared_weight)
         nn.init.zeros_(self.shared_bias)
 
     def forward(self, content_feat, style_feat):
-        assert (content_feat.size()[:2] == style_feat.size()[:2])
+        assert content_feat.size()[:2] == style_feat.size()[:2]
         size = content_feat.size()
         style_mean, style_std = calc_mean_std(style_feat)
         content_mean, content_std = calc_mean_std(content_feat)
 
-        normalized_feat = (content_feat - content_mean.expand(
-            size)) / content_std.expand(size)
-        shared_affine_feat = normalized_feat * self.shared_weight.view(1, self.num_features, 1, 1).expand(size) + \
-                             self.shared_bias.view(1, self.num_features, 1, 1).expand(size)
+        normalized_feat = (
+            content_feat - content_mean.expand(size)
+        ) / content_std.expand(size)
+        shared_affine_feat = normalized_feat * self.shared_weight.view(
+            1, self.num_features, 1, 1
+        ).expand(size) + self.shared_bias.view(1, self.num_features, 1, 1).expand(size)
         output = shared_affine_feat * style_std.expand(size) + style_mean.expand(size)
         return output
-    
-    
+
+
 class BaseStyleNet(nn.Module):
     def __init__(self, encoder, decoder):
         super().__init__()
@@ -165,7 +172,7 @@ class BaseStyleNet(nn.Module):
         self.mse_loss = nn.MSELoss()
 
         # fix the encoder
-        for name in ['enc_1', 'enc_2', 'enc_3', 'enc_4']:
+        for name in ["enc_1", "enc_2", "enc_3", "enc_4"]:
             for param in getattr(self, name).parameters():
                 param.requires_grad = False
 
@@ -174,7 +181,7 @@ class BaseStyleNet(nn.Module):
     def encode_with_intermediate(self, input):
         results = [input]
         for i in range(4):
-            func = getattr(self, 'enc_{:d}'.format(i + 1))
+            func = getattr(self, "enc_{:d}".format(i + 1))
             results.append(func(results[-1]))
         return results[1:]
 
@@ -182,25 +189,26 @@ class BaseStyleNet(nn.Module):
     # @torch.no_grad()
     def encode(self, input):
         for i in range(4):
-            input = getattr(self, 'enc_{:d}'.format(i + 1))(input)
+            input = getattr(self, "enc_{:d}".format(i + 1))(input)
         return input
 
     def calc_content_loss(self, input, target):
-        assert (input.size() == target.size())
+        assert input.size() == target.size()
         # assert (target.requires_grad is False)
         return self.mse_loss(input, target)
 
     def calc_style_loss(self, input, target):
-        assert (input.size() == target.size())
+        assert input.size() == target.size()
         # assert (target.requires_grad is False)
         input_mean, input_std = calc_mean_std(input)
         target_mean, target_std = calc_mean_std(target)
-        return self.mse_loss(input_mean, target_mean) + \
-               self.mse_loss(input_std, target_std)
+        return self.mse_loss(input_mean, target_mean) + self.mse_loss(
+            input_std, target_std
+        )
 
     @torch.no_grad()
     def style_transfer(self, content, style, alpha=1.0, interpolation_weights=None):
-        assert (0.0 <= alpha <= 1.0)
+        assert 0.0 <= alpha <= 1.0
         content_f = self.encoder(content)
         style_f = self.encoder(style)
         if interpolation_weights:
@@ -208,7 +216,7 @@ class BaseStyleNet(nn.Module):
             feat = torch.FloatTensor(1, C, H, W).zero_().cuda()
             base_feat = self.style_norm(content_f, style_f)
             for i, w in enumerate(interpolation_weights):
-                feat = feat + w * base_feat[i:i + 1]
+                feat = feat + w * base_feat[i : i + 1]
             content_f = content_f[0:1]
         else:
             feat = self.style_norm(content_f, style_f)

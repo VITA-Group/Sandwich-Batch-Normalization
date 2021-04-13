@@ -17,12 +17,12 @@ class FlatFolderDataset(data.Dataset):
         super(FlatFolderDataset, self).__init__()
         assert os.path.isdir(root), f"dir {root} does not exist."
         self.root = root
-        self.paths = list(Path(self.root).glob('*'))
+        self.paths = list(Path(self.root).glob("*"))
         self.transform = transform
 
     def __getitem__(self, index):
         path = self.paths[index]
-        img = Image.open(str(path)).convert('RGB')
+        img = Image.open(str(path)).convert("RGB")
         img = self.transform(img)
         return img
 
@@ -30,14 +30,14 @@ class FlatFolderDataset(data.Dataset):
         return len(self.paths)
 
     def name(self):
-        return 'FlatFolderDataset'
+        return "FlatFolderDataset"
 
 
 def train_transform():
     transform_list = [
         transforms.Resize(size=(512, 512)),
         transforms.RandomCrop(256),
-        transforms.ToTensor()
+        transforms.ToTensor(),
     ]
     return transforms.Compose(transform_list)
 

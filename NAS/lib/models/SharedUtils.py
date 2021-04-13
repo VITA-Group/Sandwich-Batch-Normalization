@@ -2,8 +2,11 @@
 # Copyright (c) Xuanyi Dong [GitHub D-X-Y], 2019.01 #
 #####################################################
 
+
 def additive_func(A, B):
-    assert A.dim() == B.dim() and A.size(0) == B.size(0), '{:} vs {:}'.format(A.size(), B.size())
+    assert A.dim() == B.dim() and A.size(0) == B.size(0), "{:} vs {:}".format(
+        A.size(), B.size()
+    )
     C = min(A.size(1), B.size(1))
     if A.size(1) == B.size(1):
         return A + B
@@ -26,7 +29,7 @@ def change_key(key, value):
 
 
 def parse_channel_info(xstring):
-    blocks = xstring.split(' ')
-    blocks = [x.split('-') for x in blocks]
+    blocks = xstring.split(" ")
+    blocks = [x.split("-") for x in blocks]
     blocks = [[int(_) for _ in x] for x in blocks]
     return blocks

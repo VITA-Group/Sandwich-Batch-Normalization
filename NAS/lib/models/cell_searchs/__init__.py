@@ -6,7 +6,8 @@ from .search_model_darts import TinyNetworkDarts
 from .search_model_darts_ccbn import TinyNetworkDartsCCBN
 from .search_model_darts_sabn import TinyNetworkDartsSaBN
 
-nas201_super_nets = {'DARTS-V1': TinyNetworkDarts,
-                     'DARTS-V1-ccbn': TinyNetworkDartsCCBN,
-                     'DARTS-V1-sabn': TinyNetworkDartsSaBN,
-                     }
+nas201_super_nets = {
+    "DARTS-V1": TinyNetworkDarts,
+    "DARTS-V1-ccbn": TinyNetworkDartsCCBN,
+    "DARTS-V1-sabn": TinyNetworkDartsSaBN,
+}

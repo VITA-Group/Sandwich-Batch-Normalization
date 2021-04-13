@@ -41,7 +41,17 @@ def linfball_proj(center, radius, t, in_place=True):
     return tensor_clamp(t, min=center - radius, max=center + radius, in_place=in_place)
 
 
-def PGD(x, loss_fn, y=None, eps=None, model=None, steps=3, gamma=None, randinit=False, flag=1):
+def PGD(
+    x,
+    loss_fn,
+    y=None,
+    eps=None,
+    model=None,
+    steps=3,
+    gamma=None,
+    randinit=False,
+    flag=1,
+):
     # Compute loss
     x_adv = x.clone()
     if randinit:
@@ -50,7 +60,7 @@ def PGD(x, loss_fn, y=None, eps=None, model=None, steps=3, gamma=None, randinit=
     x = x.cuda()
 
     for t in range(steps):
-        inputs = {'x': x_adv, 'flag': flag}
+        inputs = {"x": x_adv, "flag": flag}
         out = model(**inputs)
         loss_adv0 = loss_fn(out, y)
         grad0 = torch.autograd.grad(loss_adv0, x_adv, only_inputs=True)[0]
@@ -61,7 +71,9 @@ def PGD(x, loss_fn, y=None, eps=None, model=None, steps=3, gamma=None, randinit=
     return x_adv
 
 
-def PGD_nor(x, loss_fn, y=None, eps=None, model=None, steps=3, gamma=None, randinit=False):
+def PGD_nor(
+    x, loss_fn, y=None, eps=None, model=None, steps=3, gamma=None, randinit=False
+):
     # Compute loss
     x_adv = x.clone()
     if randinit:

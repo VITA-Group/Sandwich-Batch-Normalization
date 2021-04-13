@@ -30,7 +30,7 @@ def sanitize_bn(model):
 
 
 def recal_bn(network, loader):
-    print('=> recal BN')
+    print("=> recal BN")
     sanitize_bn(network)
     network.train()
     with torch.no_grad():

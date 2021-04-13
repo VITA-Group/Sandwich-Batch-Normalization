@@ -22,13 +22,14 @@ for i, c in enumerate(classes_dog_and_cat):
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         img = Image.open(f)
-        return img.convert('RGB')
+        return img.convert("RGB")
 
 
 def accimage_loader(path):
     import accimage
+
     try:
         return accimage.Image(path)
     except IOError:
@@ -38,7 +39,8 @@ def accimage_loader(path):
 
 def default_loader(path):
     from torchvision import get_image_backend
-    if get_image_backend() == 'accimage':
+
+    if get_image_backend() == "accimage":
         return accimage_loader(path)
     else:
         return pil_loader(path)
@@ -59,12 +61,12 @@ class ImagenetDataset(torch.utils.data.Dataset):
     def __init__(self, data_root, path_file, loader=default_loader, transform=None):
         self.transform = transform
         self.loader = loader
-        file = open(path_file, 'r')
+        file = open(path_file, "r")
         lines = file.readlines()
         self.img_path = []
         self.cls = []
         for line in lines:
-            path, cls = line[:len(line)-1].split(' ')
+            path, cls = line[: len(line) - 1].split(" ")
             self.img_path.append(os.path.join(data_root, path))
             self.cls.append(int(cls))
 
@@ -82,44 +84,59 @@ class ImagenetDataset(torch.utils.data.Dataset):
 
 class ImageDataset(object):
     def __init__(self, args):
-        if args.dataset.lower() == 'cifar10':
+        if args.dataset.lower() == "cifar10":
             args.n_classes = 10
             img_size = 32
             Dt = torchvision.datasets.CIFAR10
-            transform = transforms.Compose([
-                transforms.Resize(img_size),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            ])
+            transform = transforms.Compose(
+                [
+                    transforms.Resize(img_size),
+                    transforms.ToTensor(),
+                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                ]
+            )
 
             # dataset
-            train_dataset = Dt(root=args.data_path, train=True, transform=transform, download=True)
+            train_dataset = Dt(
+                root=args.data_path, train=True, transform=transform, download=True
+            )
             valid_dataset = Dt(root=args.data_path, train=False, transform=transform)
             self.train = torch.utils.data.DataLoader(
                 train_dataset,
-                batch_size=args.dis_batch_size, shuffle=True,
-                num_workers=args.num_workers, pin_memory=True)
+                batch_size=args.dis_batch_size,
+                shuffle=True,
+                num_workers=args.num_workers,
+                pin_memory=True,
+            )
             self.valid = torch.utils.data.DataLoader(
                 valid_dataset,
-                batch_size=args.val_batch_size, shuffle=False,
-                num_workers=args.num_workers, pin_memory=True)
+                batch_size=args.val_batch_size,
+                shuffle=False,
+                num_workers=args.num_workers,
+                pin_memory=True,
+            )
             self.test = self.valid
 
-        elif args.dataset.lower() == 'imagenet':
+        elif args.dataset.lower() == "imagenet":
             args.n_classes = 143
             img_size = 128
             Dt = ImagenetDataset
-            transform = transforms.Compose([
-                ShortSideCrop(),
-                transforms.Resize(size=(img_size, img_size)),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            ])
+            transform = transforms.Compose(
+                [
+                    ShortSideCrop(),
+                    transforms.Resize(size=(img_size, img_size)),
+                    transforms.ToTensor(),
+                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                ]
+            )
             # dataset
             train_dataset = Dt(args.data_path, args.path_file, transform=transform)
             self.train = torch.utils.data.DataLoader(
                 train_dataset,
-                batch_size=args.dis_batch_size, shuffle=True,
-                num_workers=args.num_workers, pin_memory=True)
+                batch_size=args.dis_batch_size,
+                shuffle=True,
+                num_workers=args.num_workers,
+                pin_memory=True,
+            )
         else:
-            raise NotImplementedError(f'Unknown dataset: {args.dataset}.')
+            raise NotImplementedError(f"Unknown dataset: {args.dataset}.")

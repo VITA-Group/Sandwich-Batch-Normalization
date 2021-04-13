@@ -48,18 +48,28 @@ except ImportError:
     def tqdm(x):
         return x
 
+
 parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('path', type=str, nargs=2,
-                    help=('Path to the generated images or '
-                          'to .npz statistic files'))
-parser.add_argument('--batch-size', type=int, default=50,
-                    help='Batch size to use')
-parser.add_argument('--dims', type=int, default=2048,
-                    choices=list(InceptionV3.BLOCK_INDEX_BY_DIM),
-                    help=('Dimensionality of Inception features to use. '
-                          'By default, uses pool3 features'))
-parser.add_argument('-c', '--gpu', default='1', type=str,
-                    help='GPU to use (leave blank for CPU only)')
+parser.add_argument(
+    "path",
+    type=str,
+    nargs=2,
+    help=("Path to the generated images or " "to .npz statistic files"),
+)
+parser.add_argument("--batch-size", type=int, default=50, help="Batch size to use")
+parser.add_argument(
+    "--dims",
+    type=int,
+    default=2048,
+    choices=list(InceptionV3.BLOCK_INDEX_BY_DIM),
+    help=(
+        "Dimensionality of Inception features to use. "
+        "By default, uses pool3 features"
+    ),
+)
+parser.add_argument(
+    "-c", "--gpu", default="1", type=str, help="GPU to use (leave blank for CPU only)"
+)
 
 
 # Pytorch implementation of matrix sqrt, from Tsung-Yu Lin, and Subhransu Maji
@@ -84,7 +94,7 @@ def sqrt_newton_schulz(A, numIters, dtype=None):
 # A pytorch implementation of cov, from Modar M. Alfadly
 # https://discuss.pytorch.org/t/covariance-and-gradient-support/16217/2
 def torch_cov(m, rowvar=False):
-    '''Estimate a covariance matrix given data.
+    """Estimate a covariance matrix given data.
 
     Covariance indicates the level to which two variables vary together.
     If we examine N-dimensional samples, `X = [x_1, x_2, ... x_N]^T`,
@@ -102,9 +112,9 @@ def torch_cov(m, rowvar=False):
 
     Returns:
         The covariance matrix of the variables.
-    '''
+    """
     if m.dim() > 2:
-        raise ValueError('m has more than 2 dimensions')
+        raise ValueError("m has more than 2 dimensions")
     if m.dim() < 2:
         m = m.view(1, -1)
     if not rowvar and m.size(0) != 1:
@@ -116,8 +126,9 @@ def torch_cov(m, rowvar=False):
     return fact * m.matmul(mt).squeeze()
 
 
-def get_activations(gen_imgs, model, batch_size=50, dims=2048,
-                    cuda=False, verbose=False):
+def get_activations(
+    gen_imgs, model, batch_size=50, dims=2048, cuda=False, verbose=False
+):
     """Calculates the activations of the pool_3 layer for all images.
 
     Params:
@@ -140,11 +151,19 @@ def get_activations(gen_imgs, model, batch_size=50, dims=2048,
     model.eval()
 
     if gen_imgs.shape[0] % batch_size != 0:
-        print(('Warning: number of images is not a multiple of the '
-               'batch size. Some samples are going to be ignored.'))
+        print(
+            (
+                "Warning: number of images is not a multiple of the "
+                "batch size. Some samples are going to be ignored."
+            )
+        )
     if batch_size > gen_imgs.shape[0]:
-        print(('Warning: batch size is bigger than the data size. '
-               'Setting batch size to data size'))
+        print(
+            (
+                "Warning: batch size is bigger than the data size. "
+                "Setting batch size to data size"
+            )
+        )
         batch_size = gen_imgs.shape[0]
 
     n_batches = gen_imgs.shape[0] // batch_size
@@ -154,12 +173,11 @@ def get_activations(gen_imgs, model, batch_size=50, dims=2048,
     pred_arr = []
     for i in tqdm(range(n_batches)):
         if verbose:
-            print('\rPropagating batch %d/%d' % (i + 1, n_batches),
-                  end='', flush=True)
+            print("\rPropagating batch %d/%d" % (i + 1, n_batches), end="", flush=True)
         start = i * batch_size
         end = start + batch_size
 
-        images = gen_imgs[start: end]
+        images = gen_imgs[start:end]
 
         pred = model(images)[0]
 
@@ -171,7 +189,7 @@ def get_activations(gen_imgs, model, batch_size=50, dims=2048,
         pred_arr += [pred.view(batch_size, -1)]
 
     if verbose:
-        print('done')
+        print("done")
 
     return torch.cat(pred_arr, dim=0)
 
@@ -196,21 +214,28 @@ def torch_calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
     --   : The Frechet Distance.
     """
 
-    assert mu1.shape == mu2.shape, \
-        'Training and test mean vectors have different lengths'
-    assert sigma1.shape == sigma2.shape, \
-        'Training and test covariances have different dimensions'
+    assert (
+        mu1.shape == mu2.shape
+    ), "Training and test mean vectors have different lengths"
+    assert (
+        sigma1.shape == sigma2.shape
+    ), "Training and test covariances have different dimensions"
 
     diff = mu1 - mu2
     # Run 50 itrs of newton-schulz to get the matrix sqrt of sigma1 dot sigma2
     covmean = sqrt_newton_schulz(sigma1.mm(sigma2).unsqueeze(0), 50).squeeze()
-    out = (diff.dot(diff) + torch.trace(sigma1) + torch.trace(sigma2)
-           - 2 * torch.trace(covmean))
+    out = (
+        diff.dot(diff)
+        + torch.trace(sigma1)
+        + torch.trace(sigma2)
+        - 2 * torch.trace(covmean)
+    )
     return out
 
 
-def calculate_activation_statistics(gen_imgs, model, batch_size=50,
-                                    dims=2048, cuda=False, verbose=False):
+def calculate_activation_statistics(
+    gen_imgs, model, batch_size=50, dims=2048, cuda=False, verbose=False
+):
     """Calculation of the statistics used by the FID.
     Params:
     -- gen_imgs    : gen_imgs, tensor
@@ -236,24 +261,25 @@ def calculate_activation_statistics(gen_imgs, model, batch_size=50,
 
 def _compute_statistics_of_path(path, model, batch_size, dims, cuda):
     if isinstance(path, str):
-        assert path.endswith('.npz')
+        assert path.endswith(".npz")
         f = np.load(path)
-        if 'mean' in f:
-            m, s = f['mean'][:], f['cov'][:]
+        if "mean" in f:
+            m, s = f["mean"][:], f["cov"][:]
         else:
-            m, s = f['mu'][:], f['sigma'][:]
+            m, s = f["mu"][:], f["sigma"][:]
         f.close()
     else:
         # a tensor
         gen_imgs = path
-        m, s = calculate_activation_statistics(gen_imgs, model, batch_size,
-                                               dims, cuda)
+        m, s = calculate_activation_statistics(gen_imgs, model, batch_size, dims, cuda)
 
     return m, s
 
 
 @torch.no_grad()
-def calculate_fid_given_paths_torch(gen_imgs, path, batch_size=50, cuda=True, dims=2048):
+def calculate_fid_given_paths_torch(
+    gen_imgs, path, batch_size=50, cuda=True, dims=2048
+):
     """
     Calculates the FID of two paths
     :param gen_imgs: The value range of gen_imgs should be (-1, 1). Just the output of tanh.
@@ -264,9 +290,11 @@ def calculate_fid_given_paths_torch(gen_imgs, path, batch_size=50, cuda=True, di
     :return:
     """
     if not os.path.exists(path):
-        raise RuntimeError('Invalid path: %s' % path)
+        raise RuntimeError("Invalid path: %s" % path)
 
-    assert gen_imgs.shape[0] >= dims, f'gen_imgs size: {gen_imgs.shape}'  # or will lead to nan
+    assert (
+        gen_imgs.shape[0] >= dims
+    ), f"gen_imgs size: {gen_imgs.shape}"  # or will lead to nan
 
     block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
 
@@ -274,26 +302,29 @@ def calculate_fid_given_paths_torch(gen_imgs, path, batch_size=50, cuda=True, di
     if cuda:
         model.cuda()
 
-    m1, s1 = _compute_statistics_of_path(gen_imgs, model, batch_size,
-                                         dims, cuda)
+    m1, s1 = _compute_statistics_of_path(gen_imgs, model, batch_size, dims, cuda)
     # print(f'generated stat: {m1}, {s1}')
-    m2, s2 = _compute_statistics_of_path(path, model, batch_size,
-                                         dims, cuda)
+    m2, s2 = _compute_statistics_of_path(path, model, batch_size, dims, cuda)
     # print(f'GT stat: {m2}, {s2}')
-    fid_value = torch_calculate_frechet_distance(m1, s1, torch.tensor(m2).float().cuda(),
-                                                 torch.tensor(s2).float().cuda())
+    fid_value = torch_calculate_frechet_distance(
+        m1, s1, torch.tensor(m2).float().cuda(), torch.tensor(s2).float().cuda()
+    )
 
     return fid_value
 
 
 @torch.no_grad()
-def get_fid(args, fid_stat, gen_net, num_img, val_batch_size, writer_dict=None, cls_idx=None):
+def get_fid(
+    args, fid_stat, gen_net, num_img, val_batch_size, writer_dict=None, cls_idx=None
+):
     gen_net.eval()
 
     eval_iter = num_img // val_batch_size
     img_list = []
-    for _ in tqdm(range(eval_iter), desc='sample images'):
-        z = torch.cuda.FloatTensor(np.random.normal(0, 1, (val_batch_size, args.latent_dim)))
+    for _ in tqdm(range(eval_iter), desc="sample images"):
+        z = torch.cuda.FloatTensor(
+            np.random.normal(0, 1, (val_batch_size, args.latent_dim))
+        )
 
         # Generate a batch of images
         if args.n_classes > 0:
@@ -301,7 +332,9 @@ def get_fid(args, fid_stat, gen_net, num_img, val_batch_size, writer_dict=None, 
                 label = torch.ones(z.shape[0]) * cls_idx
                 label = label.type(torch.cuda.LongTensor)
             else:
-                label = torch.randint(low=0, high=args.n_classes, size=(z.shape[0],), device='cuda')
+                label = torch.randint(
+                    low=0, high=args.n_classes, size=(z.shape[0],), device="cuda"
+                )
             gen_imgs = gen_net(z, label)
         else:
             gen_imgs = gen_net(z)
@@ -311,9 +344,9 @@ def get_fid(args, fid_stat, gen_net, num_img, val_batch_size, writer_dict=None, 
     fid_score = calculate_fid_given_paths_torch(img_list, fid_stat)
 
     if writer_dict:
-        writer = writer_dict['writer']
-        global_steps = writer_dict['valid_global_steps']
-        writer.add_scalar('FID_score', fid_score, global_steps)
-        writer_dict['valid_global_steps'] = global_steps + 1
+        writer = writer_dict["writer"]
+        global_steps = writer_dict["valid_global_steps"]
+        writer.add_scalar("FID_score", fid_score, global_steps)
+        writer_dict["valid_global_steps"] = global_steps + 1
 
     return fid_score

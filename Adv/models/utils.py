@@ -29,4 +29,4 @@ class NormalizeByChannelMeanStd(nn.Module):
         return normalize_fn(tensor, self.mean, self.std)
 
     def extra_repr(self):
-        return 'mean={}, std={}'.format(self.mean, self.std)
+        return "mean={}, std={}".format(self.mean, self.std)

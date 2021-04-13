@@ -6,44 +6,100 @@ import torch.nn as nn
 from .norm_modules import ConditionalBatchNorm2d
 from .cell_operations import ResNetBasicblock, Zero, Identity
 
-__all__ = ['OPS', 'ResNetBasicblock']
+__all__ = ["OPS", "ResNetBasicblock"]
 
 OPS = {
-    'none': lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes, is_node_zero: Zero(C_in,
-                                                                                                                 C_out,
-                                                                                                                 stride),
-    'avg_pool_3x3': lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes,
-                           is_node_zero: POOLING(C_in, C_out, stride, 'avg', affine, track_running_stats, num_ops,
-                                                 num_prev_nodes, is_node_zero),
-    'nor_conv_3x3': lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes,
-                           is_node_zero: ReLUConvBN(C_in, C_out, (3, 3), (stride, stride), (1, 1), (1, 1), affine,
-                                                    track_running_stats, num_ops, num_prev_nodes, is_node_zero),
-    'nor_conv_1x1': lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes,
-                           is_node_zero: ReLUConvBN(C_in, C_out, (1, 1), (stride, stride), (0, 0), (1, 1), affine,
-                                                    track_running_stats, num_ops, num_prev_nodes, is_node_zero),
-    'skip_connect': lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes,
-                           is_node_zero: Identity() if stride == 1 and C_in == C_out else FactorizedReduce(C_in, C_out,
-                                                                                                           stride,
-                                                                                                           affine,
-                                                                                                           track_running_stats,
-                                                                                                           num_ops,
-                                                                                                           num_prev_nodes,
-                                                                                                           is_node_zero),
+    "none": lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes, is_node_zero: Zero(
+        C_in, C_out, stride
+    ),
+    "avg_pool_3x3": lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes, is_node_zero: POOLING(
+        C_in,
+        C_out,
+        stride,
+        "avg",
+        affine,
+        track_running_stats,
+        num_ops,
+        num_prev_nodes,
+        is_node_zero,
+    ),
+    "nor_conv_3x3": lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes, is_node_zero: ReLUConvBN(
+        C_in,
+        C_out,
+        (3, 3),
+        (stride, stride),
+        (1, 1),
+        (1, 1),
+        affine,
+        track_running_stats,
+        num_ops,
+        num_prev_nodes,
+        is_node_zero,
+    ),
+    "nor_conv_1x1": lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes, is_node_zero: ReLUConvBN(
+        C_in,
+        C_out,
+        (1, 1),
+        (stride, stride),
+        (0, 0),
+        (1, 1),
+        affine,
+        track_running_stats,
+        num_ops,
+        num_prev_nodes,
+        is_node_zero,
+    ),
+    "skip_connect": lambda C_in, C_out, stride, affine, track_running_stats, num_ops, num_prev_nodes, is_node_zero: Identity()
+    if stride == 1 and C_in == C_out
+    else FactorizedReduce(
+        C_in,
+        C_out,
+        stride,
+        affine,
+        track_running_stats,
+        num_ops,
+        num_prev_nodes,
+        is_node_zero,
+    ),
 }
 
 
 class ReLUConvBN(nn.Module):
-
-    def __init__(self, C_in, C_out, kernel_size, stride, padding, dilation, affine, track_running_stats=True,
-                 num_prev_ops=1, num_prev_nodes=1, is_node_zero=False):
+    def __init__(
+        self,
+        C_in,
+        C_out,
+        kernel_size,
+        stride,
+        padding,
+        dilation,
+        affine,
+        track_running_stats=True,
+        num_prev_ops=1,
+        num_prev_nodes=1,
+        is_node_zero=False,
+    ):
         super(ReLUConvBN, self).__init__()
         self.op = nn.Sequential(
             nn.ReLU(inplace=False),
-            nn.Conv2d(C_in, C_out, kernel_size, stride=stride, padding=padding, dilation=dilation, bias=False),
+            nn.Conv2d(
+                C_in,
+                C_out,
+                kernel_size,
+                stride=stride,
+                padding=padding,
+                dilation=dilation,
+                bias=False,
+            ),
         )
-        self.sw_bn = ConditionalBatchNorm2d(C_out, affine=affine, track_running_stats=track_running_stats,
-                                            num_prev_ops=num_prev_ops, num_prev_nodes=num_prev_nodes,
-                                            is_node_zero=is_node_zero)
+        self.sw_bn = ConditionalBatchNorm2d(
+            C_out,
+            affine=affine,
+            track_running_stats=track_running_stats,
+            num_prev_ops=num_prev_ops,
+            num_prev_nodes=num_prev_nodes,
+            is_node_zero=is_node_zero,
+        )
 
     def forward(self, x, prev_op_idx=[0], first_layer=False):
         x = self.op(x)
@@ -52,22 +108,41 @@ class ReLUConvBN(nn.Module):
 
 
 class POOLING(nn.Module):
-
-    def __init__(self, C_in, C_out, stride, mode, affine=True, track_running_stats=True, num_prev_ops=1,
-                 num_prev_nodes=1, is_node_zero=False):
+    def __init__(
+        self,
+        C_in,
+        C_out,
+        stride,
+        mode,
+        affine=True,
+        track_running_stats=True,
+        num_prev_ops=1,
+        num_prev_nodes=1,
+        is_node_zero=False,
+    ):
         super(POOLING, self).__init__()
         if C_in == C_out:
             self.preprocess = None
         else:
-            self.preprocess = ReLUConvBN(C_in, C_out, 1, 1, 0, 1, affine, track_running_stats,
-                                         num_prev_ops=num_prev_ops, num_prev_nodes=num_prev_nodes,
-                                         is_node_zero=is_node_zero)
-        if mode == 'avg':
+            self.preprocess = ReLUConvBN(
+                C_in,
+                C_out,
+                1,
+                1,
+                0,
+                1,
+                affine,
+                track_running_stats,
+                num_prev_ops=num_prev_ops,
+                num_prev_nodes=num_prev_nodes,
+                is_node_zero=is_node_zero,
+            )
+        if mode == "avg":
             self.op = nn.AvgPool2d(3, stride=stride, padding=1, count_include_pad=False)
-        elif mode == 'max':
+        elif mode == "max":
             self.op = nn.MaxPool2d(3, stride=stride, padding=1)
         else:
-            raise ValueError('Invalid mode={:} in POOLING'.format(mode))
+            raise ValueError("Invalid mode={:} in POOLING".format(mode))
 
     def forward(self, inputs, prev_op_idx=[0], first_layer=False):
         if self.preprocess:
@@ -78,9 +153,17 @@ class POOLING(nn.Module):
 
 
 class FactorizedReduce(nn.Module):
-
-    def __init__(self, C_in, C_out, stride, affine, track_running_stats, num_prev_ops=1, num_prev_nodes=1,
-                 is_node_zero=False):
+    def __init__(
+        self,
+        C_in,
+        C_out,
+        stride,
+        affine,
+        track_running_stats,
+        num_prev_ops=1,
+        num_prev_nodes=1,
+        is_node_zero=False,
+    ):
         super(FactorizedReduce, self).__init__()
         self.stride = stride
         self.C_in = C_in
@@ -91,13 +174,20 @@ class FactorizedReduce(nn.Module):
             C_outs = [C_out // 2, C_out - C_out // 2]
             self.convs = nn.ModuleList()
             for i in range(2):
-                self.convs.append(nn.Conv2d(C_in, C_outs[i], 1, stride=stride, padding=0, bias=False))
+                self.convs.append(
+                    nn.Conv2d(C_in, C_outs[i], 1, stride=stride, padding=0, bias=False)
+                )
             self.pad = nn.ConstantPad2d((0, 1, 0, 1), 0)
         else:
-            raise ValueError('Invalid stride : {:}'.format(stride))
-        self.bn = ConditionalBatchNorm2d(C_out, affine=affine, track_running_stats=track_running_stats,
-                                         num_prev_nodes=num_prev_nodes, is_node_zero=is_node_zero,
-                                         num_prev_ops=num_prev_ops)
+            raise ValueError("Invalid stride : {:}".format(stride))
+        self.bn = ConditionalBatchNorm2d(
+            C_out,
+            affine=affine,
+            track_running_stats=track_running_stats,
+            num_prev_nodes=num_prev_nodes,
+            is_node_zero=is_node_zero,
+            num_prev_ops=num_prev_ops,
+        )
 
     def forward(self, x, prev_op_idx=[0], first_layer=False):
         x = self.relu(x)
@@ -107,4 +197,4 @@ class FactorizedReduce(nn.Module):
         return out
 
     def extra_repr(self):
-        return 'C_in={C_in}, C_out={C_out}, stride={stride}'.format(**self.__dict__)
+        return "C_in={C_in}, C_out={C_out}, stride={stride}".format(**self.__dict__)

@@ -1,5 +1,3 @@
-
-
 def obtain_accuracy(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     maxk = max(topk)

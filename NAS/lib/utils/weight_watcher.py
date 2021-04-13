@@ -21,11 +21,16 @@ def get_conv2D_Wmats(tensor: np.ndarray) -> List[np.ndarray]:
     """
     mats = []
     N, M, imax, jmax = tensor.shape
-    assert N + M >= imax + jmax, 'invalid tensor shape detected: {}x{} (NxM), {}x{} (i,j)'.format(N, M, imax, jmax)
+    assert (
+        N + M >= imax + jmax
+    ), "invalid tensor shape detected: {}x{} (NxM), {}x{} (i,j)".format(
+        N, M, imax, jmax
+    )
     for i in range(imax):
         for j in range(jmax):
             w = tensor[:, :, i, j]
-            if N < M: w = w.T
+            if N < M:
+                w = w.T
             mats.append(w)
     return mats
 
@@ -57,18 +62,29 @@ def glorot_norm_fix(w, n, m, rf_size):
     return w
 
 
-def analyze_weights(weights, min_size, max_size, alphas, lognorms, spectralnorms, softranks, normalize, glorot_fix):
+def analyze_weights(
+    weights,
+    min_size,
+    max_size,
+    alphas,
+    lognorms,
+    spectralnorms,
+    softranks,
+    normalize,
+    glorot_fix,
+):
     results = OrderedDict()
     count = len(weights)
-    if count == 0: return results
+    if count == 0:
+        return results
 
     for i, weight in enumerate(weights):
         M, N = np.min(weight.shape), np.max(weight.shape)
         Q = N / M
         results[i] = cur_res = OrderedDict(N=N, M=M, Q=Q)
         check, checkTF = glorot_norm_check(weight, N, M, count)
-        cur_res['check'] = check
-        cur_res['checkTF'] = checkTF
+        cur_res["check"] = check
+        cur_res["checkTF"] = checkTF
         # assume receptive field size is count
         if glorot_fix:
             weight = glorot_norm_fix(weight, N, M, count)
@@ -92,18 +108,24 @@ def analyze_weights(weights, min_size, max_size, alphas, lognorms, spectralnorms
             lambda0 = None
 
         if M < min_size:
-            summary = "Weight matrix {}/{} ({},{}): Skipping: too small (<{})".format(i + 1, count, M, N, min_size)
+            summary = "Weight matrix {}/{} ({},{}): Skipping: too small (<{})".format(
+                i + 1, count, M, N, min_size
+            )
             cur_res["summary"] = summary
             continue
         elif max_size > 0 and M > max_size:
-            summary = "Weight matrix {}/{} ({},{}): Skipping: too big (testing) (>{})".format(i + 1, count, M, N,
-                                                                                              max_size)
+            summary = (
+                "Weight matrix {}/{} ({},{}): Skipping: too big (testing) (>{})".format(
+                    i + 1, count, M, N, max_size
+                )
+            )
             cur_res["summary"] = summary
             continue
         else:
             summary = []
         if alphas:
             import powerlaw
+
             svd = TruncatedSVD(n_components=M - 1, n_iter=7, random_state=10)
             svd.fit(weight.astype(float))
             sv = svd.singular_values_
@@ -129,10 +151,10 @@ def analyze_weights(weights, min_size, max_size, alphas, lognorms, spectralnorms
             cur_res["logpnorm"] = logpnorm
 
             summary.append(
-                "Weight matrix {}/{} ({},{}): Alpha: {}, Alpha Weighted: {}, D: {}, pNorm {}".format(i + 1, count, M, N,
-                                                                                                     alpha,
-                                                                                                     alpha_weighted, D,
-                                                                                                     logpnorm))
+                "Weight matrix {}/{} ({},{}): Alpha: {}, Alpha Weighted: {}, D: {}, pNorm {}".format(
+                    i + 1, count, M, N, alpha, alpha_weighted, D, logpnorm
+                )
+            )
 
         if lognorms:
             norm = np.linalg.norm(weight)  # Frobenius Norm
@@ -141,14 +163,18 @@ def analyze_weights(weights, min_size, max_size, alphas, lognorms, spectralnorms
             cur_res["lognorm"] = lognorm
 
             X = np.dot(weight.T, weight)
-            if normalize: X = X / N
+            if normalize:
+                X = X / N
             normX = np.linalg.norm(X)  # Frobenius Norm
             cur_res["normX"] = normX
             lognormX = np.log10(normX)
             cur_res["lognormX"] = lognormX
 
             summary.append(
-                "Weight matrix {}/{} ({},{}): LogNorm: {} ; LogNormX: {}".format(i + 1, count, M, N, lognorm, lognormX))
+                "Weight matrix {}/{} ({},{}): LogNorm: {} ; LogNormX: {}".format(
+                    i + 1, count, M, N, lognorm, lognormX
+                )
+            )
 
             if softranks:
                 softrank = norm ** 2 / sv_max ** 2
@@ -157,9 +183,11 @@ def analyze_weights(weights, min_size, max_size, alphas, lognorms, spectralnorms
                 cur_res["softrank"] = softrank
                 cur_res["softranklog"] = softranklog
                 cur_res["softranklogratio"] = softranklogratio
-                summary += "{}. Softrank: {}. Softrank log: {}. Softrank log ratio: {}".format(summary, softrank,
-                                                                                               softranklog,
-                                                                                               softranklogratio)
+                summary += (
+                    "{}. Softrank: {}. Softrank log: {}. Softrank log ratio: {}".format(
+                        summary, softrank, softranklog, softranklogratio
+                    )
+                )
         cur_res["summary"] = "\n".join(summary)
     return results
 
@@ -189,7 +217,7 @@ def compute_details(results):
         "numofSpikes": "Number of spikes per MP fit",
         "ratio_numofSpikes": "aka, percent_mass, Number of spikes / total number of evals",
         "softrank_mp": "Softrank for MP fit",
-        "logpnorm": "alpha pNorm"
+        "logpnorm": "alpha pNorm",
     }
 
     metrics_stats = []
@@ -202,8 +230,21 @@ def compute_details(results):
         metrics_stats.append("{}_compound_max".format(metric))
         metrics_stats.append("{}_compound_avg".format(metric))
 
-    columns = ["layer_id", "layer_type", "N", "M", "layer_count", "slice",
-               "slice_count", "level", "comment"] + [*metrics] + metrics_stats
+    columns = (
+        [
+            "layer_id",
+            "layer_type",
+            "N",
+            "M",
+            "layer_count",
+            "slice",
+            "slice_count",
+            "level",
+            "comment",
+        ]
+        + [*metrics]
+        + metrics_stats
+    )
 
     metrics_values = {}
     metrics_values_compound = {}
@@ -240,8 +281,15 @@ def compute_details(results):
                 M = summary["M"]
                 Mtotal += M
 
-            data = {"layer_id": layer_id, "layer_type": layer_type, "N": N, "M": M, "slice": slice_id, "level": "SLICE",
-                    "comment": "Slice level"}
+            data = {
+                "layer_id": layer_id,
+                "layer_type": layer_type,
+                "N": N,
+                "M": M,
+                "slice": slice_id,
+                "level": "SLICE",
+                "comment": "Slice level",
+            }
             for metric in metrics:
                 if metric in summary:
                     value = summary[metric]
@@ -250,8 +298,15 @@ def compute_details(results):
                         compounds[metric].append(value)
                         data[metric] = value
 
-        data = {"layer_id": layer_id, "layer_type": layer_type, "N": Ntotal, "M": Mtotal, "slice_count": slice_count,
-                "level": "LAYER", "comment": "Layer level"}
+        data = {
+            "layer_id": layer_id,
+            "layer_type": layer_type,
+            "N": Ntotal,
+            "M": Mtotal,
+            "slice_count": slice_count,
+            "level": "LAYER",
+            "comment": "Layer level",
+        }
         # Compute the compound value over the slices
         for metric, value in compounds.items():
             count = len(value)
@@ -290,9 +345,17 @@ def compute_details(results):
     return final_summary
 
 
-def analyze(model: nn.Module, min_size=50, max_size=0,
-            alphas: bool = False, lognorms: bool = True, spectralnorms: bool = False,
-            softranks: bool = False, normalize: bool = False, glorot_fix: bool = False):
+def analyze(
+    model: nn.Module,
+    min_size=50,
+    max_size=0,
+    alphas: bool = False,
+    lognorms: bool = True,
+    spectralnorms: bool = False,
+    softranks: bool = False,
+    normalize: bool = False,
+    glorot_fix: bool = False,
+):
     """
     Analyze the weight matrices of a model.
     :param model: A PyTorch model
@@ -319,10 +382,19 @@ def analyze(model: nn.Module, min_size=50, max_size=0,
             weights = [module.weight.cpu().detach().numpy()]
         else:
             weights = get_conv2D_Wmats(module.weight.cpu().detach().numpy())
-        results = analyze_weights(weights, min_size, max_size, alphas, lognorms, spectralnorms, softranks, normalize,
-                                  glorot_fix)
-        results['id'] = index
-        results['type'] = type(module)
+        results = analyze_weights(
+            weights,
+            min_size,
+            max_size,
+            alphas,
+            lognorms,
+            spectralnorms,
+            softranks,
+            normalize,
+            glorot_fix,
+        )
+        results["id"] = index
+        results["type"] = type(module)
         all_results[index] = results
     summary = compute_details(all_results)
     return all_results, summary

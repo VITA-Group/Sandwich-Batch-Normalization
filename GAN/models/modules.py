@@ -15,13 +15,17 @@ class SandwichBatchNorm2d(nn.Module):
         self.num_features = num_features
         self.bn = nn.BatchNorm2d(num_features, affine=True)
         self.embed = nn.Embedding(num_classes, num_features * 2)
-        self.embed.weight.data[:, :num_features].normal_(1, 0.02)  # Initialise scale at N(1, 0.02)
+        self.embed.weight.data[:, :num_features].normal_(
+            1, 0.02
+        )  # Initialise scale at N(1, 0.02)
         self.embed.weight.data[:, num_features:].zero_()  # Initialise bias at 0
 
     def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         out = self.bn(x)
         gamma, beta = self.embed(y).chunk(2, 1)
-        out = gamma.view(-1, self.num_features, 1, 1) * out + beta.view(-1, self.num_features, 1, 1)
+        out = gamma.view(-1, self.num_features, 1, 1) * out + beta.view(
+            -1, self.num_features, 1, 1
+        )
         return out
 
 
@@ -31,27 +35,42 @@ class CategoricalConditionalBatchNorm2d(nn.Module):
         self.num_features = num_features
         self.bn = nn.BatchNorm2d(num_features, affine=False)
         self.embed = nn.Embedding(num_classes, num_features * 2)
-        self.embed.weight.data[:, :num_features].normal_(1, 0.02)  # Initialise scale at N(1, 0.02)
+        self.embed.weight.data[:, :num_features].normal_(
+            1, 0.02
+        )  # Initialise scale at N(1, 0.02)
         self.embed.weight.data[:, num_features:].zero_()  # Initialise bias at 0
 
     def forward(self, x, y):
         out = self.bn(x)
         gamma, beta = self.embed(y).chunk(2, 1)
-        out = gamma.view(-1, self.num_features, 1, 1) * out + beta.view(-1, self.num_features, 1, 1)
+        out = gamma.view(-1, self.num_features, 1, 1) * out + beta.view(
+            -1, self.num_features, 1, 1
+        )
         return out
 
 
 class Cell(nn.Module):
     """
-        Cell of AutoGAN
+    Cell of AutoGAN
     """
-    def __init__(self, args, in_channels, out_channels, up_mode, ksize=3, num_skip_in=0, short_cut=False, norm=None,
-                 n_classes=0):
+
+    def __init__(
+        self,
+        args,
+        in_channels,
+        out_channels,
+        up_mode,
+        ksize=3,
+        num_skip_in=0,
+        short_cut=False,
+        norm=None,
+        n_classes=0,
+    ):
         super(Cell, self).__init__()
-        UP_MODES = ['nearest', 'bilinear']
-        NORMS = ['in', 'bn']
-        self.c1 = nn.Conv2d(in_channels, out_channels, ksize, padding=ksize//2)
-        self.c2 = nn.Conv2d(out_channels, out_channels, ksize, padding=ksize//2)
+        UP_MODES = ["nearest", "bilinear"]
+        NORMS = ["in", "bn"]
+        self.c1 = nn.Conv2d(in_channels, out_channels, ksize, padding=ksize // 2)
+        self.c2 = nn.Conv2d(out_channels, out_channels, ksize, padding=ksize // 2)
         assert up_mode in UP_MODES
         self.up_mode = up_mode
         self.norm = norm
@@ -65,17 +84,21 @@ class Cell(nn.Module):
                     self.n1 = CategoricalConditionalBatchNorm2d(in_channels, n_classes)
                     self.n2 = CategoricalConditionalBatchNorm2d(out_channels, n_classes)
                 else:
-                    raise NotImplementedError(f"Unknown norm module {args.norm_module} for conditional generation.")
+                    raise NotImplementedError(
+                        f"Unknown norm module {args.norm_module} for conditional generation."
+                    )
             else:
                 assert norm in NORMS
-                if norm == 'bn':
+                if norm == "bn":
                     self.n1 = nn.BatchNorm2d(in_channels)
                     self.n2 = nn.BatchNorm2d(out_channels)
-                elif norm == 'in':
+                elif norm == "in":
                     self.n1 = nn.InstanceNorm2d(in_channels)
                     self.n2 = nn.InstanceNorm2d(out_channels)
                 else:
-                    raise NotImplementedError(f"Unknown norm module {norm} for unconditional generation.")
+                    raise NotImplementedError(
+                        f"Unknown norm module {norm} for unconditional generation."
+                    )
 
         # inner shortcut
         self.c_sc = None
@@ -85,7 +108,12 @@ class Cell(nn.Module):
         # cross scale skip
         self.skip_in_ops = None
         if num_skip_in:
-            self.skip_in_ops = nn.ModuleList([nn.Conv2d(out_channels, out_channels, kernel_size=1) for _ in range(num_skip_in)])
+            self.skip_in_ops = nn.ModuleList(
+                [
+                    nn.Conv2d(out_channels, out_channels, kernel_size=1)
+                    for _ in range(num_skip_in)
+                ]
+            )
 
     def forward(self, x, skip_ft=None, y=None):
         residual = x
@@ -117,16 +145,30 @@ class Cell(nn.Module):
 
 
 class GenBlock(nn.Module):
-    def __init__(self, args, in_channels, out_channels, hidden_channels=None, ksize=3, pad=1,
-                 activation=nn.ReLU(), upsample=False, n_classes=0):
+    def __init__(
+        self,
+        args,
+        in_channels,
+        out_channels,
+        hidden_channels=None,
+        ksize=3,
+        pad=1,
+        activation=nn.ReLU(),
+        upsample=False,
+        n_classes=0,
+    ):
         super().__init__()
         self.activation = activation
         self.upsample = upsample
         self.learnable_sc = in_channels != out_channels or upsample
         hidden_channels = out_channels if hidden_channels is None else hidden_channels
         self.n_classes = n_classes
-        self.c1 = nn.Conv2d(in_channels, hidden_channels, kernel_size=ksize, padding=pad)
-        self.c2 = nn.Conv2d(hidden_channels, out_channels, kernel_size=ksize, padding=pad)
+        self.c1 = nn.Conv2d(
+            in_channels, hidden_channels, kernel_size=ksize, padding=pad
+        )
+        self.c2 = nn.Conv2d(
+            hidden_channels, out_channels, kernel_size=ksize, padding=pad
+        )
 
         if n_classes > 0:
             # conditional
@@ -137,7 +179,9 @@ class GenBlock(nn.Module):
                 self.b1 = CategoricalConditionalBatchNorm2d(in_channels, n_classes)
                 self.b2 = CategoricalConditionalBatchNorm2d(hidden_channels, n_classes)
             else:
-                raise NotImplementedError(f"Unknown norm module {args.norm_module} for conditional generation.")
+                raise NotImplementedError(
+                    f"Unknown norm module {args.norm_module} for conditional generation."
+                )
         else:
             # unconditional
             self.b1 = nn.BatchNorm2d(in_channels)
@@ -176,7 +220,9 @@ def _downsample(x):
 
 
 class OptimizedDisBlock(nn.Module):
-    def __init__(self, args, in_channels, out_channels, ksize=3, pad=1, activation=nn.ReLU()):
+    def __init__(
+        self, args, in_channels, out_channels, ksize=3, pad=1, activation=nn.ReLU()
+    ):
         super().__init__()
         self.activation = activation
 
@@ -204,15 +250,28 @@ class OptimizedDisBlock(nn.Module):
 
 
 class DisBlock(nn.Module):
-    def __init__(self, args, in_channels, out_channels, hidden_channels=None, ksize=3, pad=1,
-                 activation=nn.ReLU(), downsample=False):
+    def __init__(
+        self,
+        args,
+        in_channels,
+        out_channels,
+        hidden_channels=None,
+        ksize=3,
+        pad=1,
+        activation=nn.ReLU(),
+        downsample=False,
+    ):
         super().__init__()
         self.activation = activation
         self.downsample = downsample
         self.learnable_sc = (in_channels != out_channels) or downsample
         hidden_channels = in_channels if hidden_channels is None else hidden_channels
-        self.c1 = nn.Conv2d(in_channels, hidden_channels, kernel_size=ksize, padding=pad)
-        self.c2 = nn.Conv2d(hidden_channels, out_channels, kernel_size=ksize, padding=pad)
+        self.c1 = nn.Conv2d(
+            in_channels, hidden_channels, kernel_size=ksize, padding=pad
+        )
+        self.c2 = nn.Conv2d(
+            hidden_channels, out_channels, kernel_size=ksize, padding=pad
+        )
         if args.d_sn:
             self.c1 = nn.utils.spectral_norm(self.c1)
             self.c2 = nn.utils.spectral_norm(self.c2)
@@ -244,5 +303,3 @@ class DisBlock(nn.Module):
 
     def forward(self, x):
         return self.residual(x) + self.shortcut(x)
-
-
