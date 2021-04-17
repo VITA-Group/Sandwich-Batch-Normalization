@@ -4,15 +4,15 @@
 # @Link    : None
 # @Version : 0.0
 
+import os
+
+import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as F
-from torch.utils.data import Dataset
-import numpy as np
-import os
 from PIL import Image
-
+from torch.utils.data import Dataset
 
 classes_dog_and_cat = np.arange(151, 294, dtype=np.int32)
 class_to_index = dict()

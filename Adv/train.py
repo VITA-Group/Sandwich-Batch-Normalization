@@ -23,7 +23,7 @@ from tensorboardX import SummaryWriter
 from torch.utils.data.sampler import SubsetRandomSampler
 from tqdm import tqdm
 
-from functions import train, validate, validate_adv, save_checkpoint
+from functions import save_checkpoint, train, validate, validate_adv
 from models.network import get_network_func
 
 

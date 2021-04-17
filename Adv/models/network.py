@@ -6,7 +6,8 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-from .modules import NormalBasicBlock, AuxBasicBlock, AuxBN, SaAuxBN
+
+from .modules import AuxBasicBlock, AuxBN, NormalBasicBlock, SaAuxBN
 from .utils import NormalizeByChannelMeanStd
 
 

@@ -7,7 +7,7 @@
 import torch
 import torch.nn as nn
 
-from .modules import GenBlock, OptimizedDisBlock, DisBlock
+from .modules import DisBlock, GenBlock, OptimizedDisBlock
 
 __all__ = ["Generator", "Discriminator"]
 

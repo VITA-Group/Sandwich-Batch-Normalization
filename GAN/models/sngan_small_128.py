@@ -4,9 +4,10 @@
 # @Link    : None
 # @Version : 0.0
 
-import torch.nn as nn
 import torch
-from .modules import GenBlock, OptimizedDisBlock, DisBlock
+import torch.nn as nn
+
+from .modules import DisBlock, GenBlock, OptimizedDisBlock
 
 
 class Generator(nn.Module):

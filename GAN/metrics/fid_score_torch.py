@@ -33,7 +33,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import os
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 
 import numpy as np
 import torch

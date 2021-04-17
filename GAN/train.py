@@ -19,7 +19,7 @@ from cfg import parse_args
 from datasets import ImageDataset
 from functions import train_conditional, validate
 from metrics.inception_score import init_inception
-from utils import save_checkpoint, create_logger, log_image, load_params, copy_params
+from utils import copy_params, create_logger, load_params, log_image, save_checkpoint
 
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True

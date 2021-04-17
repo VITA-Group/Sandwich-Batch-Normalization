@@ -13,7 +13,7 @@ import torch.nn as nn
 from torchvision.utils import make_grid
 from tqdm import tqdm
 
-from metrics import get_inception_score, calculate_fid_given_paths_torch
+from metrics import calculate_fid_given_paths_torch, get_inception_score
 
 logger = logging.getLogger(__name__)
 

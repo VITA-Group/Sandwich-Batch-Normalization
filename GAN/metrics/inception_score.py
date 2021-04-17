@@ -1,18 +1,15 @@
 # Code derived from tensorflow/tensorflow/models/image/imagenet/classify_image.py
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from tqdm import tqdm
+from __future__ import absolute_import, division, print_function
 
+import math
 import os.path
+import sys
 import tarfile
 
 import numpy as np
-from six.moves import urllib
 import tensorflow as tf
-
-import math
-import sys
+from six.moves import urllib
+from tqdm import tqdm
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
