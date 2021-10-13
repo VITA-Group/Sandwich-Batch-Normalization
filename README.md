@@ -1,8 +1,8 @@
-# Sandwich Batch Normalization
+# Sandwich Batch Normalization: A Drop-In Replacement for Feature Distribution Heterogeneity
 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 
-Code for [Sandwich Batch Normalization](https://arxiv.org/abs/2102.11382).
+Code for [Sandwich Batch Normalization: A Drop-In Replacement for Feature Distribution Heterogeneity](https://arxiv.org/abs/2102.11382).
 
 ## Introduction
 We present Sandwich Batch Normalization (SaBN), an extremely easy improvement of Batch Normalization (BN) with only a few lines of code changes.
