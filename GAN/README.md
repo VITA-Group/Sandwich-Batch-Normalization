@@ -19,7 +19,7 @@ pip install -r requirements.txt
     1. Please download ILSVRC2012 dataset from [here](http://image-net.org/download-images).
     2. Follow the guideline [here](https://github.com/pfnet-research/sngan_projection#preprocess-dataset) to preprocess the ImageNet dataset.
 
-5. Download pretrained models from our model zoo ([GoogleDrive](-)) and put it to `zoo`.
+5. Download pretrained model weights from our model zoo ([GoogleDrive](https://drive.google.com/file/d/1lpzVmrwqD_E-J5mH7qttihIzNnDaslWw/view?usp=sharing)) and put it to `zoo`.
 ```shell
 mkdir zoo
 ```
@@ -47,7 +47,7 @@ bash scripts/sngan_sabn_imagenet.sh
 tensorboard --logdir output --port 6001
 ```
 
-##### Testing using model zoo's model ([GoogleDrive](https://drive.google.com/file/d/1lpzVmrwqD_E-J5mH7qttihIzNnDaslWw/view?usp=sharing)) 
+##### Testing using model zoo's model weights ([GoogleDrive](https://drive.google.com/file/d/1lpzVmrwqD_E-J5mH7qttihIzNnDaslWw/view?usp=sharing)) 
 ```shell
 bash scripts/test_autogan_sabn_cifar10.sh
 bash scripts/test_sngan_sabn_cifar10.sh
