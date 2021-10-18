@@ -84,6 +84,17 @@ Validation style loss            | Validation content loss
 :-------------------------:|:-------------------------:
 ![val_st](imgs/val_st_losses.png)  |  ![val_ct](imgs/val_ct_losses.png)
 
+## Citation
+If you find this work is useful to your research, please cite our paper:
+```bibtex
+@InProceedings{Gong_2022_WACV,
+  title={Sandwich Batch Normalization: A Drop-In Replacement for Feature Distribution Heterogeneity},
+  author={Gong, Xinyu and Chen, Wuyang and Chen, Tianlong and Wang, Zhangyang},
+  journal={Winter Conference on Applications of Computer Vision (WACV)},
+  year={2022}
+}
+```
+
 ## Acknowledgement
 1. NAS codebase from [NAS-Bench-201](https://github.com/D-X-Y/AutoDL-Projects/blob/main/docs/NAS-Bench-201.md).
 2. NST codebase from [AdaIN](https://github.com/naoto0804/pytorch-AdaIN).
